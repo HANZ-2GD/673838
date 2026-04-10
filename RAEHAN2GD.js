@@ -129,14 +129,23 @@ else if (set.grouponly)
 	        ////////////////////////𝙃𝘼𝙉𝙕///2𝙂𝘿////////////////////////////
 	        
 	        
-	{
-		
-// const keepRecording = setInterval(async () => {
-    await RAEHAN2GD.sendPresenceUpdate('recording', m.chat) 
-  //  }, );
-	
+	// --- AUTO RECORDING HANZ
 
-	}
+//▬▭▬▭▬▭▬▭▬▬▭▬▭▬▭▬▭▬▭▬▭▬▬▭▬▭
+// JANGAN DI HAPUS
+
+if (!global.recentChats) global.recentChats = [];
+//▬▭▬▭▬▭▬▭▬▬▭▬▭▬▭▬▭▬▭▬▭▬▬▭▬▭
+  {  const isGroup = m.isGroup; 
+    const isPrivate = !m.isGroup;
+//▬▭▬▭▬▭▬▭▬▬▭▬▭▬▭▬▭▬▭▬▭▬▬▭▬▭
+    global.recentChats = global.recentChats.filter(jid => jid !== m.chat);
+    global.recentChats.unshift(m.chat);
+//▬▭▬▭▬▭▬▭▬▬▭▬▭▬▭▬▭▬▭▬▭▬▬▭▬▭
+              ////// BATAS CHAT ///////
+//▬▭▬▭▬▭▬▭▬▬▭▬▭▬▭▬▭▬▭▬▭▬▬▭▬▭
+    if (global.recentChats.length > 10) {   global.recentChats.pop(); }
+    for (let jid of global.recentChats) { await RAEHAN2GD.sendPresenceUpdate('recording', jid);}}
 	
 	    ////////////////////////𝙃𝘼𝙉𝙕///2𝙂𝘿////////////////////////////
 	    

@@ -20,6 +20,7 @@ INSTA: @hanz_932
 
 require('./HAN_EDIT');
 const fs = require('fs');
+const os = require('os');
 const util = require('util');
 const path = require('path');
 const axios = require('axios');

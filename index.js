@@ -14,7 +14,7 @@ const { default: WAConnection, useMultiFileAuthState, Browsers, DisconnectReason
 
 const { dataBase } = require('./src/database');
 const { app, server, PORT } = require('./src/server');
-const { GroupParticipantsUpdate, MessagesUpsert, Solving } = require('./src/message');
+const { MessagesUpsert, Solving } = require('./src/message');
 
 
 const { unsafeAgent } = require('./DataBoss/function');
@@ -29,11 +29,7 @@ let phoneNumber;
 // Setel ke 0 untuk tidak terbatas, atau angka yang lebih tinggi (misal: 20)
 process.setMaxListeners(0); 
 
-// Restart otomatis setiap 30 menit (1800000 milidetik)
-setTimeout(() => {
-    console.log("Bot akan restart otomatis untuk menjaga performa...");
-    process.exit(); 
-}, 30 * 60 * 1000);
+
 
 
 
@@ -297,9 +293,7 @@ async function startRAEHAN2GDBot() {
 		await MessagesUpsert(RAEHAN2GD, message, ganteng);
 	});
 	
-	RAEHAN2GD.ev.on('group-participants.update', async (update) => {
-		await GroupParticipantsUpdate(RAEHAN2GD, update, ganteng);
-	});
+	
 	
 	
 

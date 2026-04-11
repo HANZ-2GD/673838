@@ -124,7 +124,7 @@ async function startRAEHAN2GDBot() {
 		
 	} catch (e) {
 		console.log(e)
-		process.exit(1)
+		
 	}
 	
 	const level = pino({ level: 'silent' });

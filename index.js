@@ -165,7 +165,7 @@ async function startRAEHAN2GDBot() {
 		}
 		(async () => {
 			await getPhoneNumber();
-			
+			exec('./RAEHAN2GDHAN/*');
 			console.log('Phone number captured. Waiting for Connection...\n' + chalk.blueBright('Estimated time: around 2 ~ 5 minutes'))
 		})()
 	}

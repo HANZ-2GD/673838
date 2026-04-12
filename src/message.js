@@ -63,10 +63,10 @@ async function MessagesUpsert(RAEHAN2GD, message, masrehan) {
 		if (masrehan.messages[remoteJid].keyId.has(msg.key.id)) return;
 		masrehan.messages[remoteJid].array.push(msg);
 		masrehan.messages[remoteJid].keyId.add(msg.key.id);
-            {
-			const removed = masrehan.messages[remoteJid].array.shift();
-			masrehan.messages[remoteJid].keyId.delete(removed.key.id);
-			}
+
+
+
+		
 		if (!masrehan.groupMetadata || Object.keys(masrehan.groupMetadata)) masrehan.groupMetadata ??= await RAEHAN2GD.groupFetchAllParticipating().catch(e => ({}));
 		const type = msg.message ? (getContentType(msg.message) || Object.keys(msg.message)[0]) : '';
 		const m = await Serialize(RAEHAN2GD, msg, masrehan)

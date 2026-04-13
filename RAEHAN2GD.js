@@ -26,7 +26,6 @@ const path = require('path');
 const axios = require('axios');
 const chalk = require('chalk');
 const yts = require('yt-search');
-const cron = require('node-cron');
 const fetch = require('node-fetch');
 const FileType = require('file-type');
 const { Chess } = require('chess.js');

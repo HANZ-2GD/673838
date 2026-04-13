@@ -5,13 +5,15 @@ const chalk = require('chalk');
 global.owner = ['6281241415567'] 
 global.listprefix = ['+','!','.']
 global.listv = ['•','●','■','✿','▲','➩','➢','➣','➤','✦','✧','△','❀','○','□','♤','♡','◇','♧','々','〆']
+global.pairing_code = true
+global.number_bot = '' // Kalo pake panel bisa masukin nomer di sini, jika belum ambil session. Format : '628xx'
 
 
 
 
 
 
-// Lainnya
+//            HANZ 2 GD
 
 
 

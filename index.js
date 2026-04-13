@@ -17,7 +17,7 @@ const { app, server, PORT } = require('./src/server');
 const { MessagesUpsert, Solving } = require('./src/message');
 
 
-const { unsafeAgent } = require('./DataBoss/function');
+
 
 
 const print = (label, value) => console.log(`${chalk.green.bold('┃')} ${chalk.cyan.bold(label.padEnd(16))}${chalk.yellow.bold(':')} ${value}`);
@@ -33,38 +33,7 @@ process.setMaxListeners(0);
 
 
 
-global.fetchApi = async (path='/', data={}, options={}) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const base = options.name ? (options.name in global.APIs ? global.APIs[options.name] : options.name) : global.APIs.RAEHAN2GD
-      const apikey = global.APIKeys[base]
-      let method = (options.method || 'GET').toUpperCase()
-      let url = base + path
-      let payload = null
-      let headers = options.headers || { 'user-agent': 'Mozilla/5.0 (Linux; Android 15)' }
-      const isForm = options.form || data instanceof FormData || (data && typeof data.getHeaders === 'function')
-      if (isForm) {
-        payload = data
-        method = 'POST'
-        headers = { apikey, ...headers, ...data.getHeaders() }
-      } else if (method !== 'GET') {
-        payload = { ...data, apikey }
-        headers['content-type'] = 'application/json'
-      } else {
-        url += '?' + new URLSearchParams({ ...data, apikey }).toString()
-      }
 
-      const res = await axios({
-        method, url, data: payload,
-        headers, httpsAgent: unsafeAgent,
-        responseType: options.buffer ? 'arraybuffer'  : options.responseType || options.type || 'json'
-      });
-      resolve(options.buffer ? Buffer.from(res.data) : res.data);
-    } catch (e) {
-      reject(e)
-    }
-  })
-}
 
 
 const database = dataBase();

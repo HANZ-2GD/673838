@@ -100,8 +100,7 @@ try {
 		
 		
 //▬▭▬▭▬▭▬▭▬▬▭▬▭▬▭▬▭▬▭▬▭▬▬▭▬▭
-process.once('uncaughtException', console.error)
-process.once('unhandledRejection', console.error)
+
 //▬▭▬▭▬▭▬▭▬▬▭▬▭▬▭▬▭▬▭▬▭▬▬▭▬▭
 
 if (!isCreator) {

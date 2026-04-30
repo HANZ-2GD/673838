@@ -361,7 +361,330 @@ caption: hanzzz })}
 		break
 
 
+case 'waifu': case 'neko': {
+				try {
+					if (!isNsfw && text === 'nsfw') return m.reply('Filter Nsfw Sedang Aktif!')
+					const res = await fetchJson('https://api.waifu.pics/' + (text === 'nsfw' ? 'nsfw' : 'sfw') + '/' + command)
+					await RAEHAN2GD.sendFileUrl(m.chat, res.url, 'Random Waifu', m)
+					
+				} catch (e) {
+					m.reply('Server sedang offline!')
+				}
+			}
+			break
+				case 'igstalk': case 'instagramstalk': {
+				
+				if (!text) return m.reply(`Example: ${prefix + command} usernamenya`)
+				try {
+					let anu = await instaStalk(text)
+					m.reply({ image: { url: anu.avatar }, caption: `*Username :* ${anu.username}\n*Nickname :* ${anu.nickname}\n*Bio :* ${anu.description}\n*Posts :* ${anu.posts}\n*Followers :* ${anu.followers}\n*Following :* ${anu.following}\n*List Post :* ${anu.list_post.map(a => `\n*Url :* ${a.imageUrl}\n*Description :* ${a.description}\n*Detail :* ${a.detailUrl}`).join('\n')}` })
+				} catch (e) {
+					try {
+						let res = await fetchApi('/stalk/instagram', { username: text });
+						m.reply({ image: { url: res.data.profile_picture_url }, caption: `*Username :*${res.data?.username || 'Tidak Ada'}\n*Nickname :*${res.data?.full_name || 'Tidak Ada'}\n*ID :*${res.data?.instagram_id}\n*Followers :*${res.data?.followers || '0'}\n*Following :*${res.data?.following || '0'}\n*Description :*${res.data?.description || 'Tidak Ada'}\n*Website :*${res.data?.website || 'Tidak Ada'}\n*Add At :*${res.data?.added_date}\n*Uploads :*${res.data?.uploads}\n*Verified :*${res.data?.is_verified}\n*Private :*${res.data.is_private}\n` })
+					} catch (e) {
+						m.reply('Username Tidak ditemukan!')
+					}
+				}
+			}
+			break
+			
+			case 'wastalk': case 'whatsappstalk': {
+				
+				if (!text) return m.reply(`Example: ${prefix + command} @tag / 628xxx`)
+				try {
+					let num = m.quoted?.sender || m.mentionedJid?.[0] || text
+					if (!num) return m.reply(`Example : ${prefix + command} @tag / 628xxx`)
+					num = num.replace(/\D/g, '') + '@s.whatsapp.net'
+					if (!(await RAEHAN2GD.onWhatsApp(num))[0]?.exists) return m.reply('Nomer tidak terdaftar di WhatsApp!')
+					let img = await RAEHAN2GD.profilePictureUrl(num, 'image').catch(_ => 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png?q=60')
+					let bio = await RAEHAN2GD.fetchStatus(num).catch(_ => { })
+					let name = await RAEHAN2GD.getName(num)
+					let business = await RAEHAN2GD.getBusinessProfile(num)
+					let format = PhoneNum(`+${num.split('@')[0]}`)
+					let regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+					let country = regionNames.of(format.getRegionCode('international'));
+					let wea = `WhatsApp Stalk\n\n*° Country :* ${country.toUpperCase()}\n*° Name :* ${name ? name : '-'}\n*° Format Number :* ${format.getNumber('international')}\n*° Url Api :* wa.me/${num.split('@')[0]}\n*° Mentions :* @${num.split('@')[0]}\n*° Status :* ${bio?.status || '-'}\n*° Date Status :* ${bio?.setAt ? moment(bio.setAt.toDateString()).locale('id').format('LL') : '-'}\n\n${business ? `*WhatsApp Business Stalk*\n\n*° BusinessId :* ${business.wid}\n*° Website :* ${business.website ? business.website : '-'}\n*° Email :* ${business.email ? business.email : '-'}\n*° Category :* ${business.category}\n*° Address :* ${business.address ? business.address : '-'}\n*° Timeone :* ${business.business_hours.timezone ? business.business_hours.timezone : '-'}\n*° Description* : ${business.description ? business.description : '-'}` : '*Standard WhatsApp Account*'}`
+					img ? await RAEHAN2GD.sendMessage(m.chat, { image: { url: img }, caption: wea, mentions: [num] }, { quoted: m }) : m.reply(wea)
+				} catch (e) {
+					m.reply('Nomer Tidak ditemukan!')
+				}
+			}
+			break
+			case 'telestalk': case 'telegramstalk': {
+				
+				if (!text) return m.reply(`Example: ${prefix + command} usernamenya`)
+				try {
+					const res = await telegramStalk(text)
+					if (!res.description || res.title.startsWith('Telegram: Contact')) throw 'Error'
+					m.reply({ image: { url: res.image_url }, caption: `*Username :* ${text}\n*Nickname :* ${res.title || 'Tidak ada'}\n*Desc :* ${res.description || 'Tidak ada'}\n*Url :* ${res.url}`})
+				} catch (e) {
+					m.reply('Username Tidak ditemukan!')
+				}
+			}
+			break
+			case 'tiktokstalk': case 'ttstalk': {
+				
+				if (!text) return m.reply(`Example: ${prefix + command} usernamenya`)
+				try {
+					const res = await tiktokStalk(text)
+					m.reply({ image: { url: res.avatarThumb }, caption: `*Username :* ${text}\n*Nickname :* ${res.nickname}\n*Followers :* ${res.followerCount}\n*Following :* ${res.followingCount}\n*Bio :* ${res.signature}\n*Verified :* ${res.verified}\n*Video Count :* ${res.videoCount}\n*Heart Count :* ${res.heartCount}` })
+				} catch (e) {
+					m.reply('Username Tidak ditemukan!')
+				}
+			}
+			break
+			
+			
+			
+				// Downloader Menu
+			case 'ytmp3': case 'ytaudio': case 'ytplayaudio': {
+				
+				if (!text) return m.reply(`Example: ${prefix + command} url_youtube`)
+				if (!text.includes('youtu')) return m.reply('Url Tidak Mengandung Result Dari Youtube!')
+				m.reply(mess.wait)
+				try {
+					const hasil = await ytMp3(text);
+					await m.reply({
+						audio: { url: hasil.result },
+						mimetype: 'audio/mpeg',
+						contextInfo: {
+							externalAdReply: {
+								title: hasil.title,
+								body: hasil.channel,
+								previewType: 'PHOTO',
+								thumbnailUrl: hasil.thumb,
+								mediaType: 1,
+								renderLargerThumbnail: true,
+								sourceUrl: text
+							}
+						}
+					})
+					
+				} catch (e) {
+					try {
+						let hasil = await savetube.download(text, 'mp3')
+						await RAEHAN2GD.sendFileUrl(m.chat, hasil.result.download, hasil.result.title, m)
+						
+					} catch (e) {
+						try {
+							const nvl = new NvlGroup();
+							let anu = await nvl.download(text);
+							await RAEHAN2GD.sendFileUrl(m.chat, anu.audio[0].url, anu.audio[0].size, m)
+							
+						} catch (e) {
+							try {
+								let hasil = await fetchApi('/download/youtube', { url: text })
+								await RAEHAN2GD.sendFileUrl(m.chat, hasil.result.audio, hasil.result.title, m)
+								
+							} catch (e) {
+								m.reply('Gagal Mendownload Audio!')
+							}
+						}
+					}
+				}
+			}
+			break
+			case 'ytmp4': case 'ytvideo': case 'ytplayvideo': {
+				
+				if (!text) return m.reply(`Example: ${prefix + command} url_youtube`)
+				if (!text.includes('youtu')) return m.reply('Url Tidak Mengandung Result Dari Youtube!')
+				m.reply(mess.wait)
+				try {
+					const hasil = await ytMp4(text);
+					await m.reply({ video: hasil.result, caption: `*📍Title:* ${hasil.title}\n*✏Description:* ${hasil.desc ? hasil.desc : ''}\n*🚀Channel:* ${hasil.channel}\n*🗓Upload at:* ${hasil.uploadDate}` })
+					
+				} catch (e) {
+					try {
+						let hasil = await savetube.download(text, '360')
+						await RAEHAN2GD.sendFileUrl(m.chat, hasil.result.download, hasil.result.title, m)
+						
+					} catch (e) {
+						try {
+							const nvl = new NvlGroup();
+							let anu = await nvl.download(text);
+							await RAEHAN2GD.sendFileUrl(m.chat, anu.video.find(v => v.height === 360).url || anu.video[0].url, 'Done', m)
+							
+						} catch (e) {
+							try {
+								let hasil = await fetchApi('/download/youtube', { url: text })
+								await RAEHAN2GD.sendFileUrl(m.chat, hasil.result.video, hasil.result.title, m)
+								
+							} catch (e) {
+								m.reply('Gagal Mendownload Audio!')
+							}
+						}
+					}
+				}
+			}
+			break
+			case 'ig': case 'instagram': case 'instadl': case 'igdown': case 'igdl': {
+				
+				if (!text) return m.reply(`Example: ${prefix + command} url_instagram`)
+				if (!text.includes('instagram.com')) return m.reply('Url Tidak Mengandung Result Dari Instagram!')
+				m.reply(mess.wait)
+				try {
+					const hasil = await instagramDl(text);
+					if(hasil.length < 0) return m.reply('Postingan Tidak Tersedia atau Privat!')
+					for (let i = 0; i < hasil.length; i++) {
+						await RAEHAN2GD.sendFileUrl(m.chat, hasil[i].url, 'Done', m)
+					}
+					
+				} catch (e) {
+					try {
+						let hasil = await fetchApi('/download/instagram', { url: text })
+						if(hasil.result.url.length < 0) return m.reply('Postingan Tidak Tersedia atau Privat!')
+						for (let i = 0; i < hasil.result.url.length; i++) {
+							await RAEHAN2GD.sendFileUrl(m.chat, hasil.result.url[i], 'Done', m)
+						}
+						
+					} catch (e) {
+						m.reply('Postingan Tidak Tersedia atau Privat!')
+					}
+				}
+			}
+			break
+			case 'igstory': case 'instagramstory': case 'instastory': case 'storyig': {
+				if (!text) return m.reply(`Example: ${prefix + command} usernamenya`)
+				try {
+					const hasil = await instaStory(text);
+					m.reply(mess.wait)
+					for (let i = 0; i < hasil.results.length; i++) {
+						await RAEHAN2GD.sendFileUrl(m.chat, hasil.results[i].url, 'Done', m)
+					}
+				} catch (e) {
+					m.reply('Username tidak ditemukan atau Privat!');
+				}
+			}
+			break
+			case 'tiktok': case 'tiktokdown': case 'ttdown': case 'ttdl': case 'tt': case 'ttmp4': case 'ttvideo': case 'tiktokmp4': case 'tiktokvideo': {
+				
+				if (!text) return m.reply(`Example: ${prefix + command} url_tiktok`)
+				if (!text.includes('tiktok.com')) return m.reply('Url Tidak Mengandung Result Dari Tiktok!')
+				try {
+					const hasil = await tiktokDl(text);
+					m.reply(mess.wait)
+					if (hasil && hasil.size_nowm) {
+						await RAEHAN2GD.sendFileUrl(m.chat, hasil.data[1].url, `*📍Title:* ${hasil.title}\n*⏳Duration:* ${hasil.duration}\n*🎃Author:* ${hasil.author.nickname} (@${hasil.author.fullname})`, m)
+					} else {
+						for (let i = 0; i < hasil.data.length; i++) {
+							await RAEHAN2GD.sendFileUrl(m.chat, hasil.data[i].url, `*🚀Image:* ${i+1}`, m)
+						}
+					}
+					
+				} catch (e) {
+					m.reply('Gagal/Url tidak valid!')
+				}
+			}
+			break
+			case 'ttmp3': case 'tiktokmp3': case 'ttaudio': case 'tiktokaudio': {
+				
+				if (!text) return m.reply(`Example: ${prefix + command} url_tiktok`)
+				if (!text.includes('tiktok.com')) return m.reply('Url Tidak Mengandung Result Dari Tiktok!')
+				try {
+					const hasil = await tiktokDl(text);
+					m.reply(mess.wait)
+					await m.reply({
+						audio: { url: hasil.music_info.url },
+						mimetype: 'audio/mpeg',
+						contextInfo: {
+							externalAdReply: {
+								title: 'TikTok • ' + hasil.author.nickname,
+								body: hasil.stats.likes + ' suka, ' + hasil.stats.comment + ' komentar. ' + hasil.title,
+								previewType: 'PHOTO',
+								thumbnailUrl: hasil.cover,
+								mediaType: 1,
+								renderLargerThumbnail: true,
+								sourceUrl: text
+							}
+						}
+					})
+					
+				} catch (e) {
+					m.reply('Gagal/Url tidak valid!')
+				}
+			}
+			break
+			case 'fb': case 'fbdl': case 'fbdown': case 'facebook': case 'facebookdl': case 'facebookdown': case 'fbdownload': case 'fbmp4': case 'fbvideo': {
+				
+				if (!text) return m.reply(`Example: ${prefix + command} url_facebook`)
+				if (!text.includes('facebook.com')) return m.reply('Url Tidak Mengandung Result Dari Facebook!')
+				try {
+					const hasil = await facebookDl(text);
+					if (hasil.results.length < 1) {
+						m.reply('Video Tidak ditemukan!')
+					} else {
+						m.reply(mess.wait)
+						await RAEHAN2GD.sendFileUrl(m.chat, hasil.results[0].url, `*🎐Title:* ${hasil.caption}`, m);
+					}
+					
+				} catch (e) {
+					m.reply('Server downloader facebook sedang offline!')
+				}
+			}
+			break
+			case 'mediafire': case 'mf': {
+				
+				if (!text) return m.reply(`Example: ${prefix + command} https://www.mediafire.com/file/xxxxxxxxx/xxxxx.zip/file`)
+				if (!isUrl(args[0]) && !args[0].includes('mediafire.com')) return m.reply('Url Invalid!')
+				try {
+					const anu = await mediafireDl(text)
+					await m.reply({ document: { url: anu.link }, caption: `*MEDIAFIRE DOWNLOADER*\n\n*${setv} Name* : ${anu.name}\n*${setv} Size* : ${anu.size}\n*${setv} Type* : ${anu.type}\n*${setv} Upload At* : ${anu.upload_date}\n*${setv} Link* : ${anu.link}`, fileName: anu.name, mimetype: anu.type })
+					
+				} catch (e) {
+					try {
+						let anu = await fetchApi('/download/mediafire', { url: text })
+						await RAEHAN2GD.sendMedia(m.chat, anu.data.url, anu.data.filename, `*MEDIAFIRE DOWNLOADER*\n\n*${setv} Name* : ${anu.data.filename}\n*${setv} Size* : ${anu.data.size}`, m)
+						
+					} catch (e) {
+						m.reply('Server download sedang offline!')
+					}
+				}
+			}
+			break
+			case 'spotifydl': {
+				
+				if (!text) return m.reply(`Example: ${prefix + command} https://open.spotify.com/track/0JiVRyTJcJnmlwCZ854K4p`)
+				if (!isUrl(args[0]) && !args[0].includes('open.spotify.com/track')) return m.reply('Url Invalid!')
+				try {
+					const hasil = await spotifyDl(text);
+					m.reply(mess.wait)
+					await m.reply({
+						audio: { url: hasil.download },
+						mimetype: 'audio/mpeg',
+						contextInfo: {
+							externalAdReply: {
+								title: hasil.title,
+								body: clockString(hasil.duration),
+								previewType: 'PHOTO',
+								thumbnailUrl: hasil.cover,
+								mediaType: 1,
+								renderLargerThumbnail: true,
+								sourceUrl: text
+							}
+						}
+					})
+					
+				} catch (e) {
+					m.reply('Server download sedang offline!')
+				}
+			}
+			break
+	
 
+case 'tagall': {
+				if (!m.isGroup) return m.reply(mess.group)
+				if (!m.isAdmin) return m.reply(mess.admin)
+				if (!m.isBotAdmin) return m.reply(mess.botAdmin)
+				let setv = pickRandom(listv)
+				let teks = `▬▭▬▭▬▭▬▭▬▬▭▬▭\nTAG SEMUA▬▭▬▭▬▭▬▭▬▬▭▬▭\n\n*Pesan :* ${q ? q : ''}\n\n▬▭▬▭▬▭▬▭▬▬▭▬▭\n`
+				for (let mem of m.metadata.participants) {
+					teks += `╭━━━━━━━━━━━━╾•\n│⃟╾➤${setv} @${mem.id.split('@')[0]}\n╰━━━━━━━━━━━━━╯`
+				}
+				await m.reply(teks, { mentions: m.metadata.participants.map(a => a.id) })
+			}
+			break
+						
 		
 			// Menu
 			

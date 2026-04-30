@@ -168,7 +168,15 @@ async function startRAEHAN2GDBot() {
 		if (connection == 'open') {
 			console.log('Connected to : ' + JSON.stringify(RAEHAN2GD.user, null, 2));
 			let botNumber = await RAEHAN2GD.decodeJid(RAEHAN2GD.user.id);
-			
+			// Pastikan database untuk bot ini ada
+if (!global.db) global.db = {};
+if (!global.db.set) global.db.set = {};
+if (!global.db.set[botNumber]) {
+    global.db.set[botNumber] = {
+        join: true, // Set default menjadi true agar bot langsung merespon
+        // tambahkan setting lain jika ada
+    }; }
+
 		}
 		if (qr) {
 			if (!pairingCode) qrcode.generate(qr, { small: true })

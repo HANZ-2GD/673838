@@ -518,28 +518,54 @@ case 'waifu': case 'neko': {
 				}
 			}
 			break
-			case 'ig': case 'instagram': case 'instadl': case 'igdown': case 'igdl': {
+			case 'tiktok': case 'tiktokdown': case 'ttdown': case 'ttdl': case 'tt': case 'ttmp4': case 'ttvideo': case 'tiktokmp4': case 'tiktokvideo': {
 				
-				if (!text) return m.reply(`Example: ${prefix + command} url_instagram`)
-				if (!text.includes('instagram.com')) return m.reply('Url Tidak Mengandung Result Dari Instagram!')
-				m.reply(mess.wait)
+				if (!text) return m.reply(`Example: ${prefix + command} url_tiktok`)
+				if (!text.includes('tiktok.com')) return m.reply('Url Tidak Mengandung Result Dari Tiktok!')
+				m.reply(mess.wait) // Pindahkan notifikasi "wait" ke atas agar user tahu bot merespons
+				
 				try {
-					const hasil = await instagramDl(text);
-					if(hasil.length < 0) return m.reply('Postingan Tidak Tersedia atau Privat!')
-					for (let i = 0; i < hasil.length; i++) {
-						await RAEHAN2GD.sendFileUrl(m.chat, hasil[i].url, 'Done', m)
+					// 1. Percobaan pertama menggunakan scraper bawaan script
+					const hasil = await tiktokDl(text);
+					
+					if (hasil && (hasil.size_nowm || hasil.video || hasil.nowm)) {
+					    let videoUrl = hasil.data?.[1]?.url || hasil.video || hasil.nowm;
+						await RAEHAN2GD.sendFileUrl(m.chat, videoUrl, `*📍Title:* ${hasil.title || '-'}\n*⏳Duration:* ${hasil.duration || '-'}\n*🎃Author:* ${hasil.author?.nickname || '-'}`, m)
+					} else if (hasil && hasil.data && hasil.data.length > 0) {
+					    // Handle TikTok Slide / Foto
+						for (let i = 0; i < hasil.data.length; i++) {
+							await RAEHAN2GD.sendFileUrl(m.chat, hasil.data[i].url, `*🚀Image:* ${i+1}`, m)
+						}
+					} else {
+					    throw new Error('Format Data Berubah');
 					}
 					
 				} catch (e) {
 					try {
-						let hasil = await fetchApi('/download/instagram', { url: text })
-						if(hasil.result.url.length < 0) return m.reply('Postingan Tidak Tersedia atau Privat!')
-						for (let i = 0; i < hasil.result.url.length; i++) {
-							await RAEHAN2GD.sendFileUrl(m.chat, hasil.result.url[i], 'Done', m)
+						// 2. Percobaan kedua menggunakan fetchApi internal (seperti fitur FB/IG)
+						let fallback1 = await fetchApi('/download/tiktok', { url: text })
+						if (fallback1.result && fallback1.result.video) {
+							await RAEHAN2GD.sendFileUrl(m.chat, fallback1.result.video, `*📍Title:* ${fallback1.result.title || 'Tiktok Video'}`, m)
+						} else {
+						    throw new Error('API internal gagal');
 						}
-						
-					} catch (e) {
-						m.reply('Postingan Tidak Tersedia atau Privat!')
+					} catch (err) {
+					    try {
+					        // 3. Percobaan ketiga menggunakan Public API via fetchJson yang sudah di-import
+					        let res = await fetchJson(`https://api.tiklydown.eu.org/api/download?url=${text}`)
+					        if (res.video) {
+					            await RAEHAN2GD.sendFileUrl(m.chat, res.video.noWatermark, `*📍Title:* ${res.title}\n*🎃Author:* ${res.author?.name}`, m)
+					        } else if (res.images) {
+					            // Handle TikTok Slide / Foto dari API publik
+					            for (let i = 0; i < res.images.length; i++) {
+					                await RAEHAN2GD.sendFileUrl(m.chat, res.images[i].url, `*🚀Image:* ${i+1}`, m)
+					            }
+					        } else {
+					            throw new Error('API publik gagal');
+					        }
+					    } catch (finalErr) {
+					        m.reply('Semua server gagal/Url tidak valid! Pastikan url benar dan video tidak diprivat.')
+					    }
 					}
 				}
 			}
